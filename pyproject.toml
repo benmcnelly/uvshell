@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "uvshell"
+version = "0.1.1"
+description = "Enter a local .venv created by uv"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [{ name = "Ben McNelly" }]
+keywords = ["uv", "venv", "virtualenv", "shell", "pipenv", "poetry"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent",
+]
+
+[project.scripts]
+uvshell = "uvshell.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/benmcnelly/uvshell"
+Repository = "https://github.com/benmcnelly/uvshell"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/uvshell"]
