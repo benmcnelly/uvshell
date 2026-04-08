@@ -10,7 +10,7 @@ from uvshell import cli
 
 
 def test_version_matches_package():
-    assert uvshell.__version__ == "0.1.3"
+    assert uvshell.__version__ == "0.1.4"
 
 
 def test_ensure_uv_exists_exits_when_missing(monkeypatch):

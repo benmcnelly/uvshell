@@ -35,7 +35,7 @@ pip install uvshell
 ### Install From a Local Build
 
 ```bash
-pip install dist/uvshell-0.1.3-py3-none-any.whl
+pip install dist/uvshell-0.1.4-py3-none-any.whl
 ```
 
 ## Requirements
@@ -112,7 +112,7 @@ exit
 
 ```powershell
 python -m pip uninstall -y uvshell
-python -m pip install .\dist\uvshell-0.1.3-py3-none-any.whl
+python -m pip install .\dist\uvshell-0.1.4-py3-none-any.whl
 
 mkdir C:\temp\uvshell-smoke
 cd C:\temp\uvshell-smoke
