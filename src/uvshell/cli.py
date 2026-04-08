@@ -10,7 +10,27 @@ def _ensure_uv_exists() -> None:
         raise SystemExit("uv is not installed or not on PATH. Install with: pip install uv")
 
 
-def _ensure_venv(venv_dir: Path, python: str | None) -> None:
+def _ensure_project_package_setting(package: bool) -> None:
+    pyproject = Path("pyproject.toml")
+    if not pyproject.exists() or package:
+        return
+
+    content = pyproject.read_text()
+    if "[tool.uv]" in content:
+        if "package =" not in content:
+            if not content.endswith("\n"):
+                content += "\n"
+            content += "\npackage = false\n"
+            pyproject.write_text(content)
+        return
+
+    if not content.endswith("\n"):
+        content += "\n"
+    content += "\n[tool.uv]\npackage = false\n"
+    pyproject.write_text(content)
+
+
+def _ensure_venv(venv_dir: Path, python: str | None, package: bool) -> None:
     if venv_dir.exists():
         return
     _ensure_uv_exists()
@@ -18,9 +38,12 @@ def _ensure_venv(venv_dir: Path, python: str | None) -> None:
     # Initialize uv project if needed
     if not Path("pyproject.toml").exists():
         init_cmd = ["uv", "init"]
+        if package:
+            init_cmd.append("--package")
         if python:
             init_cmd += ["--python", python]
         subprocess.run(init_cmd, check=True)
+        _ensure_project_package_setting(package)
 
         for file_to_remove in ["main.py", "hello.py"]:
             p = Path(file_to_remove)
@@ -130,6 +153,11 @@ def main(argv: list[str] | None = None) -> None:
     )
     p.add_argument("--venv", default=".venv", help="Venv directory (default: .venv)")
     p.add_argument("--python", default=None, help="Passed to `uv venv --python ...` when creating.")
+    p.add_argument(
+        "--package",
+        action="store_true",
+        help="When initializing a missing uv project, create it as a packaged project.",
+    )
     p.add_argument("--no-create", action="store_true", help="Do not create the venv if missing; error instead.")
     args = p.parse_args(argv)
 
@@ -138,7 +166,7 @@ def main(argv: list[str] | None = None) -> None:
     if not venv_dir.exists():
         if args.no_create:
             raise SystemExit(f"No venv found at {venv_dir}")
-        _ensure_venv(venv_dir, args.python)
+        _ensure_venv(venv_dir, args.python, args.package)
 
     if os.name == "nt":
         _spawn_windows_cmd_subshell(venv_dir)
